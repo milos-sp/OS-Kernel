@@ -1,0 +1,173 @@
+GAS LISTING /tmp/ccO6CVG8.s 			page 1
+
+
+   1              		.file	"Console.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_ZN7Console4getcEv
+   9              	_ZN7Console4getcEv:
+  10              	.LFB2:
+  11              		.file 1 "src/Console.cpp"
+   1:src/Console.cpp **** //
+   2:src/Console.cpp **** // Created by os on 8/10/22.
+   3:src/Console.cpp **** //
+   4:src/Console.cpp **** #include "../h/syscall_cpp.hpp"
+   5:src/Console.cpp **** 
+   6:src/Console.cpp **** char Console::getc() { //samo se pozivaju oni iz syscall_c
+  12              		.loc 1 6 22
+  13              		.cfi_startproc
+  14 0000 130101FF 		addi	sp,sp,-16
+  15              		.cfi_def_cfa_offset 16
+  16 0004 23341100 		sd	ra,8(sp)
+  17 0008 23308100 		sd	s0,0(sp)
+  18              		.cfi_offset 1, -8
+  19              		.cfi_offset 8, -16
+  20 000c 13040101 		addi	s0,sp,16
+  21              		.cfi_def_cfa 8, 0
+   7:src/Console.cpp ****     return ::getc();
+  22              		.loc 1 7 5
+  23              		.loc 1 7 18 is_stmt 0
+  24 0010 97000000 		call	_Z4getcv@plt
+  24      E7800000 
+  25              	.LVL0:
+   8:src/Console.cpp **** }
+  26              		.loc 1 8 1
+  27 0018 83308100 		ld	ra,8(sp)
+  28              		.cfi_restore 1
+  29 001c 03340100 		ld	s0,0(sp)
+  30              		.cfi_restore 8
+  31              		.cfi_def_cfa 2, 16
+  32 0020 13010101 		addi	sp,sp,16
+  33              		.cfi_def_cfa_offset 0
+  34 0024 67800000 		jr	ra
+  35              		.cfi_endproc
+  36              	.LFE2:
+  38              		.align	2
+  39              		.globl	_ZN7Console4putcEc
+  41              	_ZN7Console4putcEc:
+  42              	.LFB3:
+   9:src/Console.cpp **** 
+  10:src/Console.cpp **** void Console::putc(char c) {
+  43              		.loc 1 10 28 is_stmt 1
+  44              		.cfi_startproc
+  45              	.LVL1:
+  46 0028 130101FF 		addi	sp,sp,-16
+  47              		.cfi_def_cfa_offset 16
+  48 002c 23341100 		sd	ra,8(sp)
+  49 0030 23308100 		sd	s0,0(sp)
+GAS LISTING /tmp/ccO6CVG8.s 			page 2
+
+
+  50              		.cfi_offset 1, -8
+  51              		.cfi_offset 8, -16
+  52 0034 13040101 		addi	s0,sp,16
+  53              		.cfi_def_cfa 8, 0
+  11:src/Console.cpp ****     ::putc(c);
+  54              		.loc 1 11 5
+  55              		.loc 1 11 11 is_stmt 0
+  56 0038 97000000 		call	_Z4putcc@plt
+  56      E7800000 
+  57              	.LVL2:
+  12:src/Console.cpp **** }...
+  58              		.loc 1 12 1
+  59 0040 83308100 		ld	ra,8(sp)
+  60              		.cfi_restore 1
+  61 0044 03340100 		ld	s0,0(sp)
+  62              		.cfi_restore 8
+  63              		.cfi_def_cfa 2, 16
+  64 0048 13010101 		addi	sp,sp,16
+  65              		.cfi_def_cfa_offset 0
+  66 004c 67800000 		jr	ra
+  67              		.cfi_endproc
+  68              	.LFE3:
+  70              	.Letext0:
+  71              		.file 2 "src/../h/../lib/hw.h"
+  72              		.file 3 "src/../h/syscall_c.h"
+  73              		.file 4 "src/../h/syscall_cpp.hpp"
+GAS LISTING /tmp/ccO6CVG8.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 Console.cpp
+     /tmp/ccO6CVG8.s:9      .text:0000000000000000 _ZN7Console4getcEv
+     /tmp/ccO6CVG8.s:13     .text:0000000000000000 .L0 
+     /tmp/ccO6CVG8.s:14     .text:0000000000000000 .L0 
+     /tmp/ccO6CVG8.s:15     .text:0000000000000004 .L0 
+     /tmp/ccO6CVG8.s:18     .text:000000000000000c .L0 
+     /tmp/ccO6CVG8.s:19     .text:000000000000000c .L0 
+     /tmp/ccO6CVG8.s:21     .text:0000000000000010 .L0 
+     /tmp/ccO6CVG8.s:23     .text:0000000000000010 .L0 
+     /tmp/ccO6CVG8.s:24     .text:0000000000000010 .L0 
+     /tmp/ccO6CVG8.s:27     .text:0000000000000018 .L0 
+     /tmp/ccO6CVG8.s:28     .text:000000000000001c .L0 
+     /tmp/ccO6CVG8.s:30     .text:0000000000000020 .L0 
+     /tmp/ccO6CVG8.s:31     .text:0000000000000020 .L0 
+     /tmp/ccO6CVG8.s:33     .text:0000000000000024 .L0 
+     /tmp/ccO6CVG8.s:35     .text:0000000000000028 .L0 
+     /tmp/ccO6CVG8.s:41     .text:0000000000000028 _ZN7Console4putcEc
+     /tmp/ccO6CVG8.s:44     .text:0000000000000028 .L0 
+     /tmp/ccO6CVG8.s:46     .text:0000000000000028 .L0 
+     /tmp/ccO6CVG8.s:47     .text:000000000000002c .L0 
+     /tmp/ccO6CVG8.s:50     .text:0000000000000034 .L0 
+     /tmp/ccO6CVG8.s:51     .text:0000000000000034 .L0 
+     /tmp/ccO6CVG8.s:53     .text:0000000000000038 .L0 
+     /tmp/ccO6CVG8.s:55     .text:0000000000000038 .L0 
+     /tmp/ccO6CVG8.s:56     .text:0000000000000038 .L0 
+     /tmp/ccO6CVG8.s:59     .text:0000000000000040 .L0 
+     /tmp/ccO6CVG8.s:60     .text:0000000000000044 .L0 
+     /tmp/ccO6CVG8.s:62     .text:0000000000000048 .L0 
+     /tmp/ccO6CVG8.s:63     .text:0000000000000048 .L0 
+     /tmp/ccO6CVG8.s:65     .text:000000000000004c .L0 
+     /tmp/ccO6CVG8.s:67     .text:0000000000000050 .L0 
+     /tmp/ccO6CVG8.s:74     .text:0000000000000050 .L0 
+     /tmp/ccO6CVG8.s:288    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccO6CVG8.s:644    .debug_str:000000000000012d .LASF22
+     /tmp/ccO6CVG8.s:638    .debug_str:00000000000000f7 .LASF23
+     /tmp/ccO6CVG8.s:622    .debug_str:0000000000000076 .LASF24
+     /tmp/ccO6CVG8.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccO6CVG8.s:70     .text:0000000000000050 .Letext0
+     /tmp/ccO6CVG8.s:602    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccO6CVG8.s:604    .debug_str:0000000000000000 .LASF0
+     /tmp/ccO6CVG8.s:642    .debug_str:000000000000011a .LASF1
+     /tmp/ccO6CVG8.s:626    .debug_str:00000000000000a0 .LASF2
+     /tmp/ccO6CVG8.s:620    .debug_str:000000000000006f .LASF4
+     /tmp/ccO6CVG8.s:616    .debug_str:000000000000004a .LASF3
+     /tmp/ccO6CVG8.s:610    .debug_str:000000000000002a .LASF5
+     /tmp/ccO6CVG8.s:618    .debug_str:000000000000005c .LASF6
+     /tmp/ccO6CVG8.s:640    .debug_str:0000000000000107 .LASF7
+     /tmp/ccO6CVG8.s:654    .debug_str:0000000000000221 .LASF8
+     /tmp/ccO6CVG8.s:606    .debug_str:000000000000000d .LASF9
+     /tmp/ccO6CVG8.s:608    .debug_str:000000000000001b .LASF10
+     /tmp/ccO6CVG8.s:646    .debug_str:00000000000001f1 .LASF11
+     /tmp/ccO6CVG8.s:612    .debug_str:0000000000000031 .LASF12
+     /tmp/ccO6CVG8.s:656    .debug_str:0000000000000231 .LASF13
+     /tmp/ccO6CVG8.s:624    .debug_str:0000000000000094 .LASF14
+     /tmp/ccO6CVG8.s:636    .debug_str:00000000000000e1 .LASF15
+     /tmp/ccO6CVG8.s:632    .debug_str:00000000000000b8 .LASF16
+GAS LISTING /tmp/ccO6CVG8.s 			page 4
+
+
+     /tmp/ccO6CVG8.s:658    .debug_str:0000000000000241 .LASF25
+     /tmp/ccO6CVG8.s:630    .debug_str:00000000000000b3 .LASF21
+     /tmp/ccO6CVG8.s:634    .debug_str:00000000000000ce .LASF26
+     /tmp/ccO6CVG8.s:652    .debug_str:000000000000021c .LASF20
+     /tmp/ccO6CVG8.s:650    .debug_str:0000000000000209 .LASF27
+     /tmp/ccO6CVG8.s:628    .debug_str:00000000000000ae .LASF17
+     /tmp/ccO6CVG8.s:42     .text:0000000000000028 .LFB3
+     /tmp/ccO6CVG8.s:68     .text:0000000000000050 .LFE3
+     /tmp/ccO6CVG8.s:575    .debug_loc:0000000000000000 .LLST0
+     /tmp/ccO6CVG8.s:57     .text:0000000000000040 .LVL2
+     /tmp/ccO6CVG8.s:10     .text:0000000000000000 .LFB2
+     /tmp/ccO6CVG8.s:36     .text:0000000000000028 .LFE2
+     /tmp/ccO6CVG8.s:25     .text:0000000000000018 .LVL0
+     /tmp/ccO6CVG8.s:648    .debug_str:0000000000000200 .LASF18
+     /tmp/ccO6CVG8.s:614    .debug_str:0000000000000041 .LASF19
+     /tmp/ccO6CVG8.s:45     .text:0000000000000028 .LVL1
+     /tmp/ccO6CVG8.s:75     .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+_Z4getcv
+_Z4putcc

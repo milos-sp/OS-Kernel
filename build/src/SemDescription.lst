@@ -1,0 +1,948 @@
+GAS LISTING /tmp/ccTlVi86.s 			page 1
+
+
+   1              		.file	"SemDescription.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_ZN14SemDescription5blockEv
+   9              	_ZN14SemDescription5blockEv:
+  10              	.LFB46:
+  11              		.file 1 "src/SemDescription.cpp"
+   1:src/SemDescription.cpp **** //
+   2:src/SemDescription.cpp **** // Created by os on 8/13/22.
+   3:src/SemDescription.cpp **** //
+   4:src/SemDescription.cpp **** 
+   5:src/SemDescription.cpp **** #include "../h/SemDescription.hpp"
+   6:src/SemDescription.cpp **** 
+   7:src/SemDescription.cpp **** int SemDescription::wait() {
+   8:src/SemDescription.cpp ****     if(isClosed) return -1;
+   9:src/SemDescription.cpp ****     if(--val < 0){
+  10:src/SemDescription.cpp ****         blocked.put(PCB::running);
+  11:src/SemDescription.cpp ****         block();
+  12:src/SemDescription.cpp ****     }
+  13:src/SemDescription.cpp ****     return 0;
+  14:src/SemDescription.cpp **** }
+  15:src/SemDescription.cpp **** 
+  16:src/SemDescription.cpp **** int SemDescription::signal() {
+  17:src/SemDescription.cpp ****     if(isClosed) return -1;
+  18:src/SemDescription.cpp ****     if(++val <= 0){
+  19:src/SemDescription.cpp ****         PCB* thread = blocked.get();
+  20:src/SemDescription.cpp ****         unblock(thread);
+  21:src/SemDescription.cpp ****     }
+  22:src/SemDescription.cpp ****     return 0;
+  23:src/SemDescription.cpp **** }
+  24:src/SemDescription.cpp **** 
+  25:src/SemDescription.cpp **** int SemDescription::close() { //ukloni sve iz liste blokiranih i val postavi na 0
+  26:src/SemDescription.cpp ****     if(isClosed) return -1;
+  27:src/SemDescription.cpp ****     isClosed = true;
+  28:src/SemDescription.cpp ****     while(blocked.size() > 0){
+  29:src/SemDescription.cpp ****         PCB* thread = blocked.get();
+  30:src/SemDescription.cpp ****         unblock(thread);
+  31:src/SemDescription.cpp ****     }
+  32:src/SemDescription.cpp ****     val = 0;
+  33:src/SemDescription.cpp ****     return 0;
+  34:src/SemDescription.cpp **** }
+  35:src/SemDescription.cpp **** 
+  36:src/SemDescription.cpp **** int SemDescription::block() { //running nit se blokira na semaforu
+  12              		.loc 1 36 29
+  13              		.cfi_startproc
+  14              	.LVL0:
+  37:src/SemDescription.cpp ****     if(PCB::running->status == PCB::ThreadStatus::RUNNING){
+  15              		.loc 1 37 5
+  16              		.loc 1 37 22 is_stmt 0
+  17 0000 97070000 		la	a5,_ZN3PCB7runningE
+  17      83B70700 
+  18 0008 83B70700 		ld	a5,0(a5)
+  19 000c 03A78703 		lw	a4,56(a5)
+  20              		.loc 1 37 5
+GAS LISTING /tmp/ccTlVi86.s 			page 2
+
+
+  21 0010 631C0702 		bnez	a4,.L3
+  36:src/SemDescription.cpp ****     if(PCB::running->status == PCB::ThreadStatus::RUNNING){
+  22              		.loc 1 36 29
+  23 0014 130101FF 		addi	sp,sp,-16
+  24              		.cfi_def_cfa_offset 16
+  25 0018 23341100 		sd	ra,8(sp)
+  26 001c 23308100 		sd	s0,0(sp)
+  27              		.cfi_offset 1, -8
+  28              		.cfi_offset 8, -16
+  29 0020 13040101 		addi	s0,sp,16
+  30              		.cfi_def_cfa 8, 0
+  38:src/SemDescription.cpp ****         PCB::running->status = PCB::ThreadStatus::BLOCKED_SEM; //sada ona ceka
+  31              		.loc 1 38 9 is_stmt 1
+  32              		.loc 1 38 30 is_stmt 0
+  33 0024 13074000 		li	a4,4
+  34 0028 23ACE702 		sw	a4,56(a5)
+  39:src/SemDescription.cpp ****         PCB::dispatch();
+  35              		.loc 1 39 9 is_stmt 1
+  36              		.loc 1 39 22 is_stmt 0
+  37 002c 97000000 		call	_ZN3PCB8dispatchEv@plt
+  37      E7800000 
+  38              	.LVL1:
+  40:src/SemDescription.cpp ****         return 0;
+  39              		.loc 1 40 9 is_stmt 1
+  40              		.loc 1 40 16 is_stmt 0
+  41 0034 13050000 		li	a0,0
+  41:src/SemDescription.cpp ****     }else return -1;
+  42:src/SemDescription.cpp **** }
+  42              		.loc 1 42 1
+  43 0038 83308100 		ld	ra,8(sp)
+  44              		.cfi_restore 1
+  45 003c 03340100 		ld	s0,0(sp)
+  46              		.cfi_restore 8
+  47              		.cfi_def_cfa 2, 16
+  48 0040 13010101 		addi	sp,sp,16
+  49              		.cfi_def_cfa_offset 0
+  50 0044 67800000 		jr	ra
+  51              	.LVL2:
+  52              	.L3:
+  41:src/SemDescription.cpp ****     }else return -1;
+  53              		.loc 1 41 19
+  54 0048 1305F0FF 		li	a0,-1
+  55              	.LVL3:
+  56              		.loc 1 42 1
+  57 004c 67800000 		ret
+  58              		.cfi_endproc
+  59              	.LFE46:
+  61              		.align	2
+  62              		.globl	_ZN14SemDescription4waitEv
+  64              	_ZN14SemDescription4waitEv:
+  65              	.LFB43:
+   7:src/SemDescription.cpp ****     if(isClosed) return -1;
+  66              		.loc 1 7 28 is_stmt 1
+  67              		.cfi_startproc
+  68              	.LVL4:
+   8:src/SemDescription.cpp ****     if(--val < 0){
+  69              		.loc 1 8 5
+GAS LISTING /tmp/ccTlVi86.s 			page 3
+
+
+   8:src/SemDescription.cpp ****     if(--val < 0){
+  70              		.loc 1 8 8 is_stmt 0
+  71 0050 83470502 		lbu	a5,32(a0)
+   8:src/SemDescription.cpp ****     if(--val < 0){
+  72              		.loc 1 8 5
+  73 0054 639A0706 		bnez	a5,.L10
+   7:src/SemDescription.cpp ****     if(isClosed) return -1;
+  74              		.loc 1 7 28
+  75 0058 130101FE 		addi	sp,sp,-32
+  76              		.cfi_def_cfa_offset 32
+  77 005c 233C1100 		sd	ra,24(sp)
+  78 0060 23388100 		sd	s0,16(sp)
+  79 0064 23349100 		sd	s1,8(sp)
+  80              		.cfi_offset 1, -8
+  81              		.cfi_offset 8, -16
+  82              		.cfi_offset 9, -24
+  83 0068 13040102 		addi	s0,sp,32
+  84              		.cfi_def_cfa 8, 0
+  85 006c 93040500 		mv	s1,a0
+   9:src/SemDescription.cpp ****         blocked.put(PCB::running);
+  86              		.loc 1 9 5 is_stmt 1
+   9:src/SemDescription.cpp ****         blocked.put(PCB::running);
+  87              		.loc 1 9 10 is_stmt 0
+  88 0070 83270500 		lw	a5,0(a0)
+   9:src/SemDescription.cpp ****         blocked.put(PCB::running);
+  89              		.loc 1 9 8
+  90 0074 9B87F7FF 		addiw	a5,a5,-1
+   9:src/SemDescription.cpp ****         blocked.put(PCB::running);
+  91              		.loc 1 9 14
+  92 0078 2320F500 		sw	a5,0(a0)
+   9:src/SemDescription.cpp ****         blocked.put(PCB::running);
+  93              		.loc 1 9 5
+  94 007c 13970702 		slli	a4,a5,32
+  95 0080 634E0700 		bltz	a4,.L16
+  13:src/SemDescription.cpp **** }
+  96              		.loc 1 13 12
+  97 0084 13050000 		li	a0,0
+  98              	.LVL5:
+  99              	.L9:
+  14:src/SemDescription.cpp **** 
+ 100              		.loc 1 14 1
+ 101 0088 83308101 		ld	ra,24(sp)
+ 102              		.cfi_remember_state
+ 103              		.cfi_restore 1
+ 104 008c 03340101 		ld	s0,16(sp)
+ 105              		.cfi_restore 8
+ 106              		.cfi_def_cfa 2, 32
+ 107 0090 83348100 		ld	s1,8(sp)
+ 108              		.cfi_restore 9
+ 109              	.LVL6:
+ 110 0094 13010102 		addi	sp,sp,32
+ 111              		.cfi_def_cfa_offset 0
+ 112 0098 67800000 		jr	ra
+ 113              	.LVL7:
+ 114              	.L16:
+ 115              		.cfi_restore_state
+  10:src/SemDescription.cpp ****         block();
+GAS LISTING /tmp/ccTlVi86.s 			page 4
+
+
+ 116              		.loc 1 10 9 is_stmt 1
+  10:src/SemDescription.cpp ****         block();
+ 117              		.loc 1 10 20 is_stmt 0
+ 118 009c 97070000 		la	a5,_ZN3PCB7runningE
+ 118      83B70700 
+ 119 00a4 83B50700 		ld	a1,0(a5)
+ 120 00a8 13058500 		addi	a0,a0,8
+ 121 00ac 97000000 		call	_ZN5Queue3putEP3PCB@plt
+ 121      E7800000 
+ 122              	.LVL8:
+  11:src/SemDescription.cpp ****     }
+ 123              		.loc 1 11 9 is_stmt 1
+  11:src/SemDescription.cpp ****     }
+ 124              		.loc 1 11 14 is_stmt 0
+ 125 00b4 13850400 		mv	a0,s1
+ 126 00b8 97000000 		call	_ZN14SemDescription5blockEv
+ 126      E7800000 
+ 127              	.LVL9:
+  13:src/SemDescription.cpp **** }
+ 128              		.loc 1 13 12
+ 129 00c0 13050000 		li	a0,0
+ 130 00c4 6FF05FFC 		j	.L9
+ 131              	.LVL10:
+ 132              	.L10:
+ 133              		.cfi_def_cfa_register 2
+ 134              		.cfi_restore 1
+ 135              		.cfi_restore 8
+ 136              		.cfi_restore 9
+   8:src/SemDescription.cpp ****     if(--val < 0){
+ 137              		.loc 1 8 26
+ 138 00c8 1305F0FF 		li	a0,-1
+ 139              	.LVL11:
+  14:src/SemDescription.cpp **** 
+ 140              		.loc 1 14 1
+ 141 00cc 67800000 		ret
+ 142              		.cfi_endproc
+ 143              	.LFE43:
+ 145              		.align	2
+ 146              		.globl	_ZN14SemDescription7unblockEP3PCB
+ 148              	_ZN14SemDescription7unblockEP3PCB:
+ 149              	.LFB47:
+  43:src/SemDescription.cpp **** 
+  44:src/SemDescription.cpp **** int SemDescription::unblock(PCB *thr) { //odblokira nit sa semafora i vrati je u scheduler
+ 150              		.loc 1 44 39 is_stmt 1
+ 151              		.cfi_startproc
+ 152              	.LVL12:
+  45:src/SemDescription.cpp ****     if(thr->status == PCB::ThreadStatus::BLOCKED_SEM){
+ 153              		.loc 1 45 5
+ 154              		.loc 1 45 13 is_stmt 0
+ 155 00d0 03A78503 		lw	a4,56(a1)
+ 156              		.loc 1 45 5
+ 157 00d4 93074000 		li	a5,4
+ 158 00d8 631EF702 		bne	a4,a5,.L19
+  44:src/SemDescription.cpp ****     if(thr->status == PCB::ThreadStatus::BLOCKED_SEM){
+ 159              		.loc 1 44 39
+ 160 00dc 130101FF 		addi	sp,sp,-16
+ 161              		.cfi_def_cfa_offset 16
+GAS LISTING /tmp/ccTlVi86.s 			page 5
+
+
+ 162 00e0 23341100 		sd	ra,8(sp)
+ 163 00e4 23308100 		sd	s0,0(sp)
+ 164              		.cfi_offset 1, -8
+ 165              		.cfi_offset 8, -16
+ 166 00e8 13040101 		addi	s0,sp,16
+ 167              		.cfi_def_cfa 8, 0
+ 168 00ec 13850500 		mv	a0,a1
+ 169              	.LVL13:
+  46:src/SemDescription.cpp ****         thr->status = PCB::ThreadStatus::READY;
+ 170              		.loc 1 46 9 is_stmt 1
+ 171              		.loc 1 46 21 is_stmt 0
+ 172 00f0 93071000 		li	a5,1
+ 173 00f4 23ACF502 		sw	a5,56(a1)
+  47:src/SemDescription.cpp ****         Scheduler::put(thr);
+ 174              		.loc 1 47 9 is_stmt 1
+ 175              		.loc 1 47 23 is_stmt 0
+ 176 00f8 97000000 		call	_ZN9Scheduler3putEP3PCB@plt
+ 176      E7800000 
+ 177              	.LVL14:
+  48:src/SemDescription.cpp ****         return 0;
+ 178              		.loc 1 48 9 is_stmt 1
+ 179              		.loc 1 48 16 is_stmt 0
+ 180 0100 13050000 		li	a0,0
+  49:src/SemDescription.cpp ****     }else return -1;
+  50:src/SemDescription.cpp **** }
+ 181              		.loc 1 50 1
+ 182 0104 83308100 		ld	ra,8(sp)
+ 183              		.cfi_restore 1
+ 184 0108 03340100 		ld	s0,0(sp)
+ 185              		.cfi_restore 8
+ 186              		.cfi_def_cfa 2, 16
+ 187 010c 13010101 		addi	sp,sp,16
+ 188              		.cfi_def_cfa_offset 0
+ 189 0110 67800000 		jr	ra
+ 190              	.LVL15:
+ 191              	.L19:
+  49:src/SemDescription.cpp ****     }else return -1;
+ 192              		.loc 1 49 19
+ 193 0114 1305F0FF 		li	a0,-1
+ 194              	.LVL16:
+ 195              		.loc 1 50 1
+ 196 0118 67800000 		ret
+ 197              		.cfi_endproc
+ 198              	.LFE47:
+ 200              		.align	2
+ 201              		.globl	_ZN14SemDescription6signalEv
+ 203              	_ZN14SemDescription6signalEv:
+ 204              	.LFB44:
+  16:src/SemDescription.cpp ****     if(isClosed) return -1;
+ 205              		.loc 1 16 30 is_stmt 1
+ 206              		.cfi_startproc
+ 207              	.LVL17:
+  17:src/SemDescription.cpp ****     if(++val <= 0){
+ 208              		.loc 1 17 5
+  17:src/SemDescription.cpp ****     if(++val <= 0){
+ 209              		.loc 1 17 8 is_stmt 0
+ 210 011c 83470502 		lbu	a5,32(a0)
+GAS LISTING /tmp/ccTlVi86.s 			page 6
+
+
+  17:src/SemDescription.cpp ****     if(++val <= 0){
+ 211              		.loc 1 17 5
+ 212 0120 63960706 		bnez	a5,.L26
+  16:src/SemDescription.cpp ****     if(isClosed) return -1;
+ 213              		.loc 1 16 30
+ 214 0124 130101FE 		addi	sp,sp,-32
+ 215              		.cfi_def_cfa_offset 32
+ 216 0128 233C1100 		sd	ra,24(sp)
+ 217 012c 23388100 		sd	s0,16(sp)
+ 218 0130 23349100 		sd	s1,8(sp)
+ 219              		.cfi_offset 1, -8
+ 220              		.cfi_offset 8, -16
+ 221              		.cfi_offset 9, -24
+ 222 0134 13040102 		addi	s0,sp,32
+ 223              		.cfi_def_cfa 8, 0
+ 224 0138 93040500 		mv	s1,a0
+  18:src/SemDescription.cpp ****         PCB* thread = blocked.get();
+ 225              		.loc 1 18 5 is_stmt 1
+ 226              	.LBB5:
+  18:src/SemDescription.cpp ****         PCB* thread = blocked.get();
+ 227              		.loc 1 18 10 is_stmt 0
+ 228 013c 83270500 		lw	a5,0(a0)
+  18:src/SemDescription.cpp ****         PCB* thread = blocked.get();
+ 229              		.loc 1 18 8
+ 230 0140 9B871700 		addiw	a5,a5,1
+ 231 0144 1B870700 		sext.w	a4,a5
+  18:src/SemDescription.cpp ****         PCB* thread = blocked.get();
+ 232              		.loc 1 18 14
+ 233 0148 2320F500 		sw	a5,0(a0)
+  18:src/SemDescription.cpp ****         PCB* thread = blocked.get();
+ 234              		.loc 1 18 5
+ 235 014c 635EE000 		blez	a4,.L32
+ 236              	.LBE5:
+  22:src/SemDescription.cpp **** }
+ 237              		.loc 1 22 12
+ 238 0150 13050000 		li	a0,0
+ 239              	.LVL18:
+ 240              	.L25:
+  23:src/SemDescription.cpp **** 
+ 241              		.loc 1 23 1
+ 242 0154 83308101 		ld	ra,24(sp)
+ 243              		.cfi_remember_state
+ 244              		.cfi_restore 1
+ 245 0158 03340101 		ld	s0,16(sp)
+ 246              		.cfi_restore 8
+ 247              		.cfi_def_cfa 2, 32
+ 248 015c 83348100 		ld	s1,8(sp)
+ 249              		.cfi_restore 9
+ 250              	.LVL19:
+ 251 0160 13010102 		addi	sp,sp,32
+ 252              		.cfi_def_cfa_offset 0
+ 253 0164 67800000 		jr	ra
+ 254              	.LVL20:
+ 255              	.L32:
+ 256              		.cfi_restore_state
+ 257              	.LBB7:
+ 258              	.LBB6:
+GAS LISTING /tmp/ccTlVi86.s 			page 7
+
+
+  19:src/SemDescription.cpp ****         unblock(thread);
+ 259              		.loc 1 19 9 is_stmt 1
+  19:src/SemDescription.cpp ****         unblock(thread);
+ 260              		.loc 1 19 34 is_stmt 0
+ 261 0168 13058500 		addi	a0,a0,8
+ 262 016c 97000000 		call	_ZN5Queue3getEv@plt
+ 262      E7800000 
+ 263              	.LVL21:
+ 264 0174 93050500 		mv	a1,a0
+ 265              	.LVL22:
+  20:src/SemDescription.cpp ****     }
+ 266              		.loc 1 20 9 is_stmt 1
+  20:src/SemDescription.cpp ****     }
+ 267              		.loc 1 20 16 is_stmt 0
+ 268 0178 13850400 		mv	a0,s1
+ 269              	.LVL23:
+ 270 017c 97000000 		call	_ZN14SemDescription7unblockEP3PCB
+ 270      E7800000 
+ 271              	.LVL24:
+ 272              	.LBE6:
+ 273              	.LBE7:
+  22:src/SemDescription.cpp **** }
+ 274              		.loc 1 22 12
+ 275 0184 13050000 		li	a0,0
+ 276              	.LBB8:
+ 277 0188 6FF0DFFC 		j	.L25
+ 278              	.LVL25:
+ 279              	.L26:
+ 280              		.cfi_def_cfa_register 2
+ 281              		.cfi_restore 1
+ 282              		.cfi_restore 8
+ 283              		.cfi_restore 9
+ 284              	.LBE8:
+  17:src/SemDescription.cpp ****     if(++val <= 0){
+ 285              		.loc 1 17 26
+ 286 018c 1305F0FF 		li	a0,-1
+ 287              	.LVL26:
+  23:src/SemDescription.cpp **** 
+ 288              		.loc 1 23 1
+ 289 0190 67800000 		ret
+ 290              		.cfi_endproc
+ 291              	.LFE44:
+ 293              		.align	2
+ 294              		.globl	_ZN14SemDescription5closeEv
+ 296              	_ZN14SemDescription5closeEv:
+ 297              	.LFB45:
+  25:src/SemDescription.cpp ****     if(isClosed) return -1;
+ 298              		.loc 1 25 29 is_stmt 1
+ 299              		.cfi_startproc
+ 300              	.LVL27:
+  26:src/SemDescription.cpp ****     isClosed = true;
+ 301              		.loc 1 26 5
+  26:src/SemDescription.cpp ****     isClosed = true;
+ 302              		.loc 1 26 8 is_stmt 0
+ 303 0194 83470502 		lbu	a5,32(a0)
+  26:src/SemDescription.cpp ****     isClosed = true;
+ 304              		.loc 1 26 5
+GAS LISTING /tmp/ccTlVi86.s 			page 8
+
+
+ 305 0198 63940706 		bnez	a5,.L37
+  25:src/SemDescription.cpp ****     if(isClosed) return -1;
+ 306              		.loc 1 25 29
+ 307 019c 130101FE 		addi	sp,sp,-32
+ 308              		.cfi_def_cfa_offset 32
+ 309 01a0 233C1100 		sd	ra,24(sp)
+ 310 01a4 23388100 		sd	s0,16(sp)
+ 311 01a8 23349100 		sd	s1,8(sp)
+ 312              		.cfi_offset 1, -8
+ 313              		.cfi_offset 8, -16
+ 314              		.cfi_offset 9, -24
+ 315 01ac 13040102 		addi	s0,sp,32
+ 316              		.cfi_def_cfa 8, 0
+ 317 01b0 93040500 		mv	s1,a0
+  27:src/SemDescription.cpp ****     while(blocked.size() > 0){
+ 318              		.loc 1 27 5 is_stmt 1
+  27:src/SemDescription.cpp ****     while(blocked.size() > 0){
+ 319              		.loc 1 27 14 is_stmt 0
+ 320 01b4 93071000 		li	a5,1
+ 321 01b8 2300F502 		sb	a5,32(a0)
+ 322 01bc 6F000002 		j	.L36
+ 323              	.LVL28:
+ 324              	.L42:
+ 325              	.LBB9:
+  29:src/SemDescription.cpp ****         unblock(thread);
+ 326              		.loc 1 29 9 is_stmt 1
+  29:src/SemDescription.cpp ****         unblock(thread);
+ 327              		.loc 1 29 34 is_stmt 0
+ 328 01c0 13858400 		addi	a0,s1,8
+ 329 01c4 97000000 		call	_ZN5Queue3getEv@plt
+ 329      E7800000 
+ 330              	.LVL29:
+ 331 01cc 93050500 		mv	a1,a0
+ 332              	.LVL30:
+  30:src/SemDescription.cpp ****     }
+ 333              		.loc 1 30 9 is_stmt 1
+  30:src/SemDescription.cpp ****     }
+ 334              		.loc 1 30 16 is_stmt 0
+ 335 01d0 13850400 		mv	a0,s1
+ 336              	.LVL31:
+ 337 01d4 97000000 		call	_ZN14SemDescription7unblockEP3PCB
+ 337      E7800000 
+ 338              	.LVL32:
+ 339              	.L36:
+ 340              	.LBE9:
+  28:src/SemDescription.cpp ****         PCB* thread = blocked.get();
+ 341              		.loc 1 28 5 is_stmt 1
+  28:src/SemDescription.cpp ****         PCB* thread = blocked.get();
+ 342              		.loc 1 28 26
+ 343              	.LBB10:
+ 344              	.LBB11:
+ 345              		.file 2 "src/../h/Queue.hpp"
+   1:src/../h/Queue.hpp **** //
+   2:src/../h/Queue.hpp **** // Created by os on 8/13/22.
+   3:src/../h/Queue.hpp **** //
+   4:src/../h/Queue.hpp **** 
+   5:src/../h/Queue.hpp **** #ifndef PROJECT_BASE_QUEUE_HPP
+GAS LISTING /tmp/ccTlVi86.s 			page 9
+
+
+   6:src/../h/Queue.hpp **** #define PROJECT_BASE_QUEUE_HPP
+   7:src/../h/Queue.hpp **** 
+   8:src/../h/Queue.hpp **** #include "PCB.hpp"
+   9:src/../h/Queue.hpp **** 
+  10:src/../h/Queue.hpp **** class Queue {
+  11:src/../h/Queue.hpp **** public:
+  12:src/../h/Queue.hpp ****     struct Elem
+  13:src/../h/Queue.hpp ****     {
+  14:src/../h/Queue.hpp ****         PCB *data;
+  15:src/../h/Queue.hpp ****         Elem *next;
+  16:src/../h/Queue.hpp **** 
+  17:src/../h/Queue.hpp ****         Elem(PCB *data, Elem *next) : data(data), next(next) {}
+  18:src/../h/Queue.hpp **** 
+  19:src/../h/Queue.hpp ****         void *operator new(size_t size) { return MemoryAllocator::mem_alloc(size); }
+  20:src/../h/Queue.hpp ****         void operator delete(void *ptr) { MemoryAllocator::mem_free(ptr); }
+  21:src/../h/Queue.hpp ****     };
+  22:src/../h/Queue.hpp **** 
+  23:src/../h/Queue.hpp ****     Elem *head, *tail;
+  24:src/../h/Queue.hpp ****     int counter;
+  25:src/../h/Queue.hpp **** 
+  26:src/../h/Queue.hpp ****     Queue() : head(nullptr), tail(nullptr), counter(0) {}
+  27:src/../h/Queue.hpp **** 
+  28:src/../h/Queue.hpp ****     int size() const { return counter; }
+ 346              		.loc 2 28 24
+ 347              		.loc 2 28 31 is_stmt 0
+ 348 01dc 83A78401 		lw	a5,24(s1)
+ 349              	.LVL33:
+ 350              	.LBE11:
+ 351              	.LBE10:
+  28:src/SemDescription.cpp ****         PCB* thread = blocked.get();
+ 352              		.loc 1 28 26
+ 353 01e0 E340F0FE 		bgtz	a5,.L42
+  32:src/SemDescription.cpp ****     return 0;
+ 354              		.loc 1 32 5 is_stmt 1
+  32:src/SemDescription.cpp ****     return 0;
+ 355              		.loc 1 32 9 is_stmt 0
+ 356 01e4 23A00400 		sw	zero,0(s1)
+  33:src/SemDescription.cpp **** }
+ 357              		.loc 1 33 5 is_stmt 1
+  33:src/SemDescription.cpp **** }
+ 358              		.loc 1 33 12 is_stmt 0
+ 359 01e8 13050000 		li	a0,0
+  34:src/SemDescription.cpp **** 
+ 360              		.loc 1 34 1
+ 361 01ec 83308101 		ld	ra,24(sp)
+ 362              		.cfi_restore 1
+ 363 01f0 03340101 		ld	s0,16(sp)
+ 364              		.cfi_restore 8
+ 365              		.cfi_def_cfa 2, 32
+ 366 01f4 83348100 		ld	s1,8(sp)
+ 367              		.cfi_restore 9
+ 368              	.LVL34:
+ 369 01f8 13010102 		addi	sp,sp,32
+ 370              		.cfi_def_cfa_offset 0
+ 371 01fc 67800000 		jr	ra
+ 372              	.LVL35:
+ 373              	.L37:
+GAS LISTING /tmp/ccTlVi86.s 			page 10
+
+
+  26:src/SemDescription.cpp ****     isClosed = true;
+ 374              		.loc 1 26 26
+ 375 0200 1305F0FF 		li	a0,-1
+ 376              	.LVL36:
+  34:src/SemDescription.cpp **** 
+ 377              		.loc 1 34 1
+ 378 0204 67800000 		ret
+ 379              		.cfi_endproc
+ 380              	.LFE45:
+ 382              	.Letext0:
+ 383              		.file 3 "src/../h/../lib/hw.h"
+ 384              		.file 4 "src/../h/PCB.hpp"
+ 385              		.file 5 "src/../h/Scheduler.hpp"
+ 386              		.file 6 "src/../h/syscall_c.h"
+ 387              		.file 7 "src/../h/SemDescription.hpp"
+GAS LISTING /tmp/ccTlVi86.s 			page 11
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 SemDescription.cpp
+     /tmp/ccTlVi86.s:9      .text:0000000000000000 _ZN14SemDescription5blockEv
+     /tmp/ccTlVi86.s:13     .text:0000000000000000 .L0 
+     /tmp/ccTlVi86.s:15     .text:0000000000000000 .L0 
+     /tmp/ccTlVi86.s:16     .text:0000000000000000 .L0 
+     /tmp/ccTlVi86.s:17     .text:0000000000000000 .L0 
+     /tmp/ccTlVi86.s:21     .text:0000000000000010 .L0 
+     /tmp/ccTlVi86.s:23     .text:0000000000000014 .L0 
+     /tmp/ccTlVi86.s:24     .text:0000000000000018 .L0 
+     /tmp/ccTlVi86.s:27     .text:0000000000000020 .L0 
+     /tmp/ccTlVi86.s:28     .text:0000000000000020 .L0 
+     /tmp/ccTlVi86.s:30     .text:0000000000000024 .L0 
+     /tmp/ccTlVi86.s:32     .text:0000000000000024 .L0 
+     /tmp/ccTlVi86.s:33     .text:0000000000000024 .L0 
+     /tmp/ccTlVi86.s:36     .text:000000000000002c .L0 
+     /tmp/ccTlVi86.s:37     .text:000000000000002c .L0 
+     /tmp/ccTlVi86.s:40     .text:0000000000000034 .L0 
+     /tmp/ccTlVi86.s:41     .text:0000000000000034 .L0 
+     /tmp/ccTlVi86.s:43     .text:0000000000000038 .L0 
+     /tmp/ccTlVi86.s:44     .text:000000000000003c .L0 
+     /tmp/ccTlVi86.s:46     .text:0000000000000040 .L0 
+     /tmp/ccTlVi86.s:47     .text:0000000000000040 .L0 
+     /tmp/ccTlVi86.s:49     .text:0000000000000044 .L0 
+     /tmp/ccTlVi86.s:54     .text:0000000000000048 .L0 
+     /tmp/ccTlVi86.s:57     .text:000000000000004c .L0 
+     /tmp/ccTlVi86.s:58     .text:0000000000000050 .L0 
+     /tmp/ccTlVi86.s:64     .text:0000000000000050 _ZN14SemDescription4waitEv
+     /tmp/ccTlVi86.s:67     .text:0000000000000050 .L0 
+     /tmp/ccTlVi86.s:69     .text:0000000000000050 .L0 
+     /tmp/ccTlVi86.s:70     .text:0000000000000050 .L0 
+     /tmp/ccTlVi86.s:71     .text:0000000000000050 .L0 
+     /tmp/ccTlVi86.s:73     .text:0000000000000054 .L0 
+     /tmp/ccTlVi86.s:75     .text:0000000000000058 .L0 
+     /tmp/ccTlVi86.s:76     .text:000000000000005c .L0 
+     /tmp/ccTlVi86.s:80     .text:0000000000000068 .L0 
+     /tmp/ccTlVi86.s:81     .text:0000000000000068 .L0 
+     /tmp/ccTlVi86.s:82     .text:0000000000000068 .L0 
+     /tmp/ccTlVi86.s:84     .text:000000000000006c .L0 
+     /tmp/ccTlVi86.s:87     .text:0000000000000070 .L0 
+     /tmp/ccTlVi86.s:88     .text:0000000000000070 .L0 
+     /tmp/ccTlVi86.s:90     .text:0000000000000074 .L0 
+     /tmp/ccTlVi86.s:92     .text:0000000000000078 .L0 
+     /tmp/ccTlVi86.s:94     .text:000000000000007c .L0 
+     /tmp/ccTlVi86.s:97     .text:0000000000000084 .L0 
+     /tmp/ccTlVi86.s:101    .text:0000000000000088 .L0 
+     /tmp/ccTlVi86.s:102    .text:000000000000008c .L0 
+     /tmp/ccTlVi86.s:103    .text:000000000000008c .L0 
+     /tmp/ccTlVi86.s:105    .text:0000000000000090 .L0 
+     /tmp/ccTlVi86.s:106    .text:0000000000000090 .L0 
+     /tmp/ccTlVi86.s:108    .text:0000000000000094 .L0 
+     /tmp/ccTlVi86.s:111    .text:0000000000000098 .L0 
+     /tmp/ccTlVi86.s:115    .text:000000000000009c .L0 
+     /tmp/ccTlVi86.s:117    .text:000000000000009c .L0 
+     /tmp/ccTlVi86.s:118    .text:000000000000009c .L0 
+     /tmp/ccTlVi86.s:124    .text:00000000000000b4 .L0 
+     /tmp/ccTlVi86.s:125    .text:00000000000000b4 .L0 
+GAS LISTING /tmp/ccTlVi86.s 			page 12
+
+
+     /tmp/ccTlVi86.s:129    .text:00000000000000c0 .L0 
+     /tmp/ccTlVi86.s:133    .text:00000000000000c8 .L0 
+     /tmp/ccTlVi86.s:134    .text:00000000000000c8 .L0 
+     /tmp/ccTlVi86.s:135    .text:00000000000000c8 .L0 
+     /tmp/ccTlVi86.s:136    .text:00000000000000c8 .L0 
+     /tmp/ccTlVi86.s:138    .text:00000000000000c8 .L0 
+     /tmp/ccTlVi86.s:141    .text:00000000000000cc .L0 
+     /tmp/ccTlVi86.s:142    .text:00000000000000d0 .L0 
+     /tmp/ccTlVi86.s:148    .text:00000000000000d0 _ZN14SemDescription7unblockEP3PCB
+     /tmp/ccTlVi86.s:151    .text:00000000000000d0 .L0 
+     /tmp/ccTlVi86.s:153    .text:00000000000000d0 .L0 
+     /tmp/ccTlVi86.s:154    .text:00000000000000d0 .L0 
+     /tmp/ccTlVi86.s:155    .text:00000000000000d0 .L0 
+     /tmp/ccTlVi86.s:157    .text:00000000000000d4 .L0 
+     /tmp/ccTlVi86.s:160    .text:00000000000000dc .L0 
+     /tmp/ccTlVi86.s:161    .text:00000000000000e0 .L0 
+     /tmp/ccTlVi86.s:164    .text:00000000000000e8 .L0 
+     /tmp/ccTlVi86.s:165    .text:00000000000000e8 .L0 
+     /tmp/ccTlVi86.s:167    .text:00000000000000ec .L0 
+     /tmp/ccTlVi86.s:171    .text:00000000000000f0 .L0 
+     /tmp/ccTlVi86.s:172    .text:00000000000000f0 .L0 
+     /tmp/ccTlVi86.s:175    .text:00000000000000f8 .L0 
+     /tmp/ccTlVi86.s:176    .text:00000000000000f8 .L0 
+     /tmp/ccTlVi86.s:179    .text:0000000000000100 .L0 
+     /tmp/ccTlVi86.s:180    .text:0000000000000100 .L0 
+     /tmp/ccTlVi86.s:182    .text:0000000000000104 .L0 
+     /tmp/ccTlVi86.s:183    .text:0000000000000108 .L0 
+     /tmp/ccTlVi86.s:185    .text:000000000000010c .L0 
+     /tmp/ccTlVi86.s:186    .text:000000000000010c .L0 
+     /tmp/ccTlVi86.s:188    .text:0000000000000110 .L0 
+     /tmp/ccTlVi86.s:193    .text:0000000000000114 .L0 
+     /tmp/ccTlVi86.s:196    .text:0000000000000118 .L0 
+     /tmp/ccTlVi86.s:197    .text:000000000000011c .L0 
+     /tmp/ccTlVi86.s:203    .text:000000000000011c _ZN14SemDescription6signalEv
+     /tmp/ccTlVi86.s:206    .text:000000000000011c .L0 
+     /tmp/ccTlVi86.s:208    .text:000000000000011c .L0 
+     /tmp/ccTlVi86.s:209    .text:000000000000011c .L0 
+     /tmp/ccTlVi86.s:210    .text:000000000000011c .L0 
+     /tmp/ccTlVi86.s:212    .text:0000000000000120 .L0 
+     /tmp/ccTlVi86.s:214    .text:0000000000000124 .L0 
+     /tmp/ccTlVi86.s:215    .text:0000000000000128 .L0 
+     /tmp/ccTlVi86.s:219    .text:0000000000000134 .L0 
+     /tmp/ccTlVi86.s:220    .text:0000000000000134 .L0 
+     /tmp/ccTlVi86.s:221    .text:0000000000000134 .L0 
+     /tmp/ccTlVi86.s:223    .text:0000000000000138 .L0 
+     /tmp/ccTlVi86.s:227    .text:000000000000013c .L0 
+     /tmp/ccTlVi86.s:228    .text:000000000000013c .L0 
+     /tmp/ccTlVi86.s:230    .text:0000000000000140 .L0 
+     /tmp/ccTlVi86.s:233    .text:0000000000000148 .L0 
+     /tmp/ccTlVi86.s:235    .text:000000000000014c .L0 
+     /tmp/ccTlVi86.s:238    .text:0000000000000150 .L0 
+     /tmp/ccTlVi86.s:242    .text:0000000000000154 .L0 
+     /tmp/ccTlVi86.s:243    .text:0000000000000158 .L0 
+     /tmp/ccTlVi86.s:244    .text:0000000000000158 .L0 
+     /tmp/ccTlVi86.s:246    .text:000000000000015c .L0 
+     /tmp/ccTlVi86.s:247    .text:000000000000015c .L0 
+     /tmp/ccTlVi86.s:249    .text:0000000000000160 .L0 
+GAS LISTING /tmp/ccTlVi86.s 			page 13
+
+
+     /tmp/ccTlVi86.s:252    .text:0000000000000164 .L0 
+     /tmp/ccTlVi86.s:256    .text:0000000000000168 .L0 
+     /tmp/ccTlVi86.s:260    .text:0000000000000168 .L0 
+     /tmp/ccTlVi86.s:261    .text:0000000000000168 .L0 
+     /tmp/ccTlVi86.s:267    .text:0000000000000178 .L0 
+     /tmp/ccTlVi86.s:268    .text:0000000000000178 .L0 
+     /tmp/ccTlVi86.s:275    .text:0000000000000184 .L0 
+     /tmp/ccTlVi86.s:280    .text:000000000000018c .L0 
+     /tmp/ccTlVi86.s:281    .text:000000000000018c .L0 
+     /tmp/ccTlVi86.s:282    .text:000000000000018c .L0 
+     /tmp/ccTlVi86.s:283    .text:000000000000018c .L0 
+     /tmp/ccTlVi86.s:286    .text:000000000000018c .L0 
+     /tmp/ccTlVi86.s:289    .text:0000000000000190 .L0 
+     /tmp/ccTlVi86.s:290    .text:0000000000000194 .L0 
+     /tmp/ccTlVi86.s:296    .text:0000000000000194 _ZN14SemDescription5closeEv
+     /tmp/ccTlVi86.s:299    .text:0000000000000194 .L0 
+     /tmp/ccTlVi86.s:301    .text:0000000000000194 .L0 
+     /tmp/ccTlVi86.s:302    .text:0000000000000194 .L0 
+     /tmp/ccTlVi86.s:303    .text:0000000000000194 .L0 
+     /tmp/ccTlVi86.s:305    .text:0000000000000198 .L0 
+     /tmp/ccTlVi86.s:307    .text:000000000000019c .L0 
+     /tmp/ccTlVi86.s:308    .text:00000000000001a0 .L0 
+     /tmp/ccTlVi86.s:312    .text:00000000000001ac .L0 
+     /tmp/ccTlVi86.s:313    .text:00000000000001ac .L0 
+     /tmp/ccTlVi86.s:314    .text:00000000000001ac .L0 
+     /tmp/ccTlVi86.s:316    .text:00000000000001b0 .L0 
+     /tmp/ccTlVi86.s:319    .text:00000000000001b4 .L0 
+     /tmp/ccTlVi86.s:320    .text:00000000000001b4 .L0 
+     /tmp/ccTlVi86.s:327    .text:00000000000001c0 .L0 
+     /tmp/ccTlVi86.s:328    .text:00000000000001c0 .L0 
+     /tmp/ccTlVi86.s:334    .text:00000000000001d0 .L0 
+     /tmp/ccTlVi86.s:335    .text:00000000000001d0 .L0 
+     /tmp/ccTlVi86.s:342    .text:00000000000001dc .L0 
+     /tmp/ccTlVi86.s:346    .text:00000000000001dc .L0 
+     /tmp/ccTlVi86.s:347    .text:00000000000001dc .L0 
+     /tmp/ccTlVi86.s:348    .text:00000000000001dc .L0 
+     /tmp/ccTlVi86.s:353    .text:00000000000001e0 .L0 
+     /tmp/ccTlVi86.s:355    .text:00000000000001e4 .L0 
+     /tmp/ccTlVi86.s:356    .text:00000000000001e4 .L0 
+     /tmp/ccTlVi86.s:358    .text:00000000000001e8 .L0 
+     /tmp/ccTlVi86.s:359    .text:00000000000001e8 .L0 
+     /tmp/ccTlVi86.s:361    .text:00000000000001ec .L0 
+     /tmp/ccTlVi86.s:362    .text:00000000000001f0 .L0 
+     /tmp/ccTlVi86.s:364    .text:00000000000001f4 .L0 
+     /tmp/ccTlVi86.s:365    .text:00000000000001f4 .L0 
+     /tmp/ccTlVi86.s:367    .text:00000000000001f8 .L0 
+     /tmp/ccTlVi86.s:370    .text:00000000000001fc .L0 
+     /tmp/ccTlVi86.s:375    .text:0000000000000200 .L0 
+     /tmp/ccTlVi86.s:378    .text:0000000000000204 .L0 
+     /tmp/ccTlVi86.s:379    .text:0000000000000208 .L0 
+     /tmp/ccTlVi86.s:388    .text:0000000000000208 .L0 
+     /tmp/ccTlVi86.s:17     .text:0000000000000000 .L0 
+     /tmp/ccTlVi86.s:118    .text:000000000000009c .L0 
+     /tmp/ccTlVi86.s:52     .text:0000000000000048 .L3
+     /tmp/ccTlVi86.s:132    .text:00000000000000c8 .L10
+     /tmp/ccTlVi86.s:114    .text:000000000000009c .L16
+     /tmp/ccTlVi86.s:99     .text:0000000000000088 .L9
+GAS LISTING /tmp/ccTlVi86.s 			page 14
+
+
+     /tmp/ccTlVi86.s:191    .text:0000000000000114 .L19
+     /tmp/ccTlVi86.s:279    .text:000000000000018c .L26
+     /tmp/ccTlVi86.s:255    .text:0000000000000168 .L32
+     /tmp/ccTlVi86.s:240    .text:0000000000000154 .L25
+     /tmp/ccTlVi86.s:373    .text:0000000000000200 .L37
+     /tmp/ccTlVi86.s:339    .text:00000000000001dc .L36
+     /tmp/ccTlVi86.s:324    .text:00000000000001c0 .L42
+     /tmp/ccTlVi86.s:1506   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccTlVi86.s:3041   .debug_str:0000000000000590 .LASF105
+     /tmp/ccTlVi86.s:3001   .debug_str:000000000000047a .LASF106
+     /tmp/ccTlVi86.s:2913   .debug_str:00000000000001fd .LASF107
+     /tmp/ccTlVi86.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccTlVi86.s:382    .text:0000000000000208 .Letext0
+     /tmp/ccTlVi86.s:2839   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccTlVi86.s:2967   .debug_str:0000000000000397 .LASF0
+     /tmp/ccTlVi86.s:2981   .debug_str:00000000000003f1 .LASF1
+     /tmp/ccTlVi86.s:2955   .debug_str:000000000000034e .LASF2
+     /tmp/ccTlVi86.s:2931   .debug_str:00000000000002c3 .LASF4
+     /tmp/ccTlVi86.s:3021   .debug_str:00000000000004fd .LASF3
+     /tmp/ccTlVi86.s:2859   .debug_str:000000000000009d .LASF5
+     /tmp/ccTlVi86.s:2985   .debug_str:000000000000040b .LASF6
+     /tmp/ccTlVi86.s:2965   .debug_str:0000000000000384 .LASF7
+     /tmp/ccTlVi86.s:3053   .debug_str:00000000000006a8 .LASF8
+     /tmp/ccTlVi86.s:2919   .debug_str:0000000000000248 .LASF9
+     /tmp/ccTlVi86.s:3005   .debug_str:0000000000000497 .LASF10
+     /tmp/ccTlVi86.s:3045   .debug_str:000000000000065c .LASF11
+     /tmp/ccTlVi86.s:2863   .debug_str:00000000000000ac .LASF12
+     /tmp/ccTlVi86.s:2843   .debug_str:0000000000000008 .LASF13
+     /tmp/ccTlVi86.s:2875   .debug_str:0000000000000130 .LASF14
+     /tmp/ccTlVi86.s:3019   .debug_str:00000000000004e7 .LASF15
+     /tmp/ccTlVi86.s:2883   .debug_str:000000000000014e .LASF16
+     /tmp/ccTlVi86.s:2911   .debug_str:00000000000001f8 .LASF17
+     /tmp/ccTlVi86.s:2999   .debug_str:0000000000000470 .LASF20
+     /tmp/ccTlVi86.s:2855   .debug_str:0000000000000070 .LASF18
+     /tmp/ccTlVi86.s:2923   .debug_str:0000000000000269 .LASF108
+     /tmp/ccTlVi86.s:2943   .debug_str:00000000000002f9 .LASF109
+     /tmp/ccTlVi86.s:2881   .debug_str:0000000000000146 .LASF19
+     /tmp/ccTlVi86.s:2973   .debug_str:00000000000003b3 .LASF34
+     /tmp/ccTlVi86.s:2937   .debug_str:00000000000002d7 .LASF110
+     /tmp/ccTlVi86.s:2871   .debug_str:00000000000000fb .LASF111
+     /tmp/ccTlVi86.s:2995   .debug_str:000000000000044f .LASF21
+     /tmp/ccTlVi86.s:3003   .debug_str:0000000000000491 .LASF22
+     /tmp/ccTlVi86.s:3027   .debug_str:0000000000000530 .LASF23
+     /tmp/ccTlVi86.s:3043   .debug_str:0000000000000654 .LASF24
+     /tmp/ccTlVi86.s:2947   .debug_str:0000000000000316 .LASF25
+     /tmp/ccTlVi86.s:2849   .debug_str:000000000000004c .LASF112
+     /tmp/ccTlVi86.s:3067   .debug_str:0000000000000716 .LASF26
+     /tmp/ccTlVi86.s:3017   .debug_str:00000000000004e2 .LASF27
+     /tmp/ccTlVi86.s:2867   .debug_str:00000000000000d4 .LASF29
+     /tmp/ccTlVi86.s:2939   .debug_str:00000000000002e1 .LASF28
+     /tmp/ccTlVi86.s:3073   .debug_str:000000000000074f .LASF30
+     /tmp/ccTlVi86.s:3013   .debug_str:00000000000004ce .LASF113
+     /tmp/ccTlVi86.s:2975   .debug_str:00000000000003cb .LASF31
+     /tmp/ccTlVi86.s:3071   .debug_str:000000000000072b .LASF32
+     /tmp/ccTlVi86.s:3059   .debug_str:00000000000006cf .LASF33
+     /tmp/ccTlVi86.s:3009   .debug_str:00000000000004ac .LASF35
+     /tmp/ccTlVi86.s:3069   .debug_str:000000000000071e .LASF36
+GAS LISTING /tmp/ccTlVi86.s 			page 15
+
+
+     /tmp/ccTlVi86.s:2987   .debug_str:000000000000041e .LASF37
+     /tmp/ccTlVi86.s:2899   .debug_str:00000000000001c3 .LASF38
+     /tmp/ccTlVi86.s:3033   .debug_str:000000000000055c .LASF71
+     /tmp/ccTlVi86.s:2961   .debug_str:0000000000000369 .LASF41
+     /tmp/ccTlVi86.s:2993   .debug_str:0000000000000438 .LASF43
+     /tmp/ccTlVi86.s:3065   .debug_str:000000000000070c .LASF39
+     /tmp/ccTlVi86.s:2847   .debug_str:0000000000000027 .LASF40
+     /tmp/ccTlVi86.s:3029   .debug_str:0000000000000539 .LASF42
+     /tmp/ccTlVi86.s:2917   .debug_str:000000000000022f .LASF44
+     /tmp/ccTlVi86.s:2905   .debug_str:00000000000001df .LASF45
+     /tmp/ccTlVi86.s:2889   .debug_str:0000000000000186 .LASF46
+     /tmp/ccTlVi86.s:2979   .debug_str:00000000000003eb .LASF47
+     /tmp/ccTlVi86.s:2925   .debug_str:000000000000027d .LASF48
+     /tmp/ccTlVi86.s:2945   .debug_str:0000000000000311 .LASF49
+     /tmp/ccTlVi86.s:2845   .debug_str:0000000000000018 .LASF50
+     /tmp/ccTlVi86.s:3007   .debug_str:00000000000004a6 .LASF51
+     /tmp/ccTlVi86.s:2977   .debug_str:00000000000003da .LASF52
+     /tmp/ccTlVi86.s:3023   .debug_str:000000000000050f .LASF53
+     /tmp/ccTlVi86.s:2933   .debug_str:00000000000002ca .LASF54
+     /tmp/ccTlVi86.s:2971   .debug_str:00000000000003ad .LASF55
+     /tmp/ccTlVi86.s:2935   .debug_str:00000000000002cf .LASF56
+     /tmp/ccTlVi86.s:2983   .debug_str:0000000000000404 .LASF57
+     /tmp/ccTlVi86.s:2853   .debug_str:0000000000000066 .LASF58
+     /tmp/ccTlVi86.s:2941   .debug_str:00000000000002ee .LASF59
+     /tmp/ccTlVi86.s:2953   .debug_str:0000000000000343 .LASF60
+     /tmp/ccTlVi86.s:2969   .debug_str:00000000000003a4 .LASF61
+     /tmp/ccTlVi86.s:2921   .debug_str:0000000000000256 .LASF63
+     /tmp/ccTlVi86.s:3063   .debug_str:00000000000006fe .LASF65
+     /tmp/ccTlVi86.s:2873   .debug_str:0000000000000108 .LASF114
+     /tmp/ccTlVi86.s:2951   .debug_str:0000000000000335 .LASF62
+     /tmp/ccTlVi86.s:2997   .debug_str:0000000000000457 .LASF64
+     /tmp/ccTlVi86.s:3031   .debug_str:0000000000000546 .LASF100
+     /tmp/ccTlVi86.s:2907   .debug_str:00000000000001e7 .LASF115
+     /tmp/ccTlVi86.s:2903   .debug_str:00000000000001d9 .LASF66
+     /tmp/ccTlVi86.s:3015   .debug_str:00000000000004d3 .LASF67
+     /tmp/ccTlVi86.s:2963   .debug_str:0000000000000374 .LASF68
+     /tmp/ccTlVi86.s:2865   .debug_str:00000000000000bc .LASF69
+     /tmp/ccTlVi86.s:2895   .debug_str:0000000000000197 .LASF70
+     /tmp/ccTlVi86.s:2929   .debug_str:00000000000002aa .LASF72
+     /tmp/ccTlVi86.s:2841   .debug_str:0000000000000000 .LASF73
+     /tmp/ccTlVi86.s:3057   .debug_str:00000000000006c6 .LASF74
+     /tmp/ccTlVi86.s:3047   .debug_str:000000000000066b .LASF75
+     /tmp/ccTlVi86.s:2885   .debug_str:0000000000000164 .LASF76
+     /tmp/ccTlVi86.s:3061   .debug_str:00000000000006e1 .LASF77
+     /tmp/ccTlVi86.s:2909   .debug_str:00000000000001f3 .LASF78
+     /tmp/ccTlVi86.s:3051   .debug_str:000000000000068d .LASF79
+     /tmp/ccTlVi86.s:2991   .debug_str:0000000000000431 .LASF80
+     /tmp/ccTlVi86.s:2927   .debug_str:000000000000028d .LASF81
+     /tmp/ccTlVi86.s:3039   .debug_str:000000000000058a .LASF82
+     /tmp/ccTlVi86.s:2887   .debug_str:000000000000016a .LASF83
+     /tmp/ccTlVi86.s:2901   .debug_str:00000000000001d3 .LASF84
+     /tmp/ccTlVi86.s:3035   .debug_str:0000000000000569 .LASF85
+     /tmp/ccTlVi86.s:2861   .debug_str:00000000000000a4 .LASF86
+     /tmp/ccTlVi86.s:2857   .debug_str:000000000000007b .LASF87
+     /tmp/ccTlVi86.s:3049   .debug_str:0000000000000687 .LASF88
+     /tmp/ccTlVi86.s:2891   .debug_str:000000000000018d .LASF91
+     /tmp/ccTlVi86.s:2877   .debug_str:000000000000013c .LASF89
+GAS LISTING /tmp/ccTlVi86.s 			page 16
+
+
+     /tmp/ccTlVi86.s:2879   .debug_str:0000000000000141 .LASF90
+     /tmp/ccTlVi86.s:2869   .debug_str:00000000000000e0 .LASF92
+     /tmp/ccTlVi86.s:2949   .debug_str:0000000000000322 .LASF93
+     /tmp/ccTlVi86.s:2897   .debug_str:00000000000001af .LASF116
+     /tmp/ccTlVi86.s:2893   .debug_str:0000000000000192 .LASF94
+     /tmp/ccTlVi86.s:2959   .debug_str:0000000000000364 .LASF95
+     /tmp/ccTlVi86.s:2957   .debug_str:000000000000035c .LASF96
+     /tmp/ccTlVi86.s:3055   .debug_str:00000000000006b8 .LASF97
+     /tmp/ccTlVi86.s:3037   .debug_str:0000000000000585 .LASF98
+     /tmp/ccTlVi86.s:2851   .debug_str:0000000000000054 .LASF99
+     /tmp/ccTlVi86.s:2915   .debug_str:000000000000021b .LASF101
+     /tmp/ccTlVi86.s:3025   .debug_str:0000000000000520 .LASF102
+     /tmp/ccTlVi86.s:149    .text:00000000000000d0 .LFB47
+     /tmp/ccTlVi86.s:198    .text:000000000000011c .LFE47
+     /tmp/ccTlVi86.s:3011   .debug_str:00000000000004c9 .LASF103
+     /tmp/ccTlVi86.s:2632   .debug_loc:0000000000000000 .LLST2
+     /tmp/ccTlVi86.s:2657   .debug_loc:0000000000000062 .LLST3
+     /tmp/ccTlVi86.s:177    .text:0000000000000100 .LVL14
+     /tmp/ccTlVi86.s:10     .text:0000000000000000 .LFB46
+     /tmp/ccTlVi86.s:59     .text:0000000000000050 .LFE46
+     /tmp/ccTlVi86.s:2675   .debug_loc:00000000000000ae .LLST0
+     /tmp/ccTlVi86.s:38     .text:0000000000000034 .LVL1
+     /tmp/ccTlVi86.s:297    .text:0000000000000194 .LFB45
+     /tmp/ccTlVi86.s:380    .text:0000000000000208 .LFE45
+     /tmp/ccTlVi86.s:2700   .debug_loc:0000000000000110 .LLST6
+     /tmp/ccTlVi86.s:325    .text:00000000000001c0 .LBB9
+     /tmp/ccTlVi86.s:340    .text:00000000000001dc .LBE9
+     /tmp/ccTlVi86.s:2989   .debug_str:000000000000042a .LASF104
+     /tmp/ccTlVi86.s:2729   .debug_loc:0000000000000185 .LLST7
+     /tmp/ccTlVi86.s:330    .text:00000000000001cc .LVL29
+     /tmp/ccTlVi86.s:338    .text:00000000000001dc .LVL32
+     /tmp/ccTlVi86.s:343    .text:00000000000001dc .LBB10
+     /tmp/ccTlVi86.s:351    .text:00000000000001e0 .LBE10
+     /tmp/ccTlVi86.s:2740   .debug_loc:00000000000001bb .LLST8
+     /tmp/ccTlVi86.s:204    .text:000000000000011c .LFB44
+     /tmp/ccTlVi86.s:291    .text:0000000000000194 .LFE44
+     /tmp/ccTlVi86.s:2749   .debug_loc:00000000000001e0 .LLST4
+     /tmp/ccTlVi86.s:258    .text:0000000000000168 .LBB6
+     /tmp/ccTlVi86.s:272    .text:0000000000000184 .LBE6
+     /tmp/ccTlVi86.s:2782   .debug_loc:0000000000000268 .LLST5
+     /tmp/ccTlVi86.s:263    .text:0000000000000174 .LVL21
+     /tmp/ccTlVi86.s:271    .text:0000000000000184 .LVL24
+     /tmp/ccTlVi86.s:65     .text:0000000000000050 .LFB43
+     /tmp/ccTlVi86.s:143    .text:00000000000000d0 .LFE43
+     /tmp/ccTlVi86.s:2793   .debug_loc:000000000000029e .LLST1
+     /tmp/ccTlVi86.s:122    .text:00000000000000b4 .LVL8
+     /tmp/ccTlVi86.s:127    .text:00000000000000c0 .LVL9
+     /tmp/ccTlVi86.s:152    .text:00000000000000d0 .LVL12
+     /tmp/ccTlVi86.s:169    .text:00000000000000f0 .LVL13
+     /tmp/ccTlVi86.s:190    .text:0000000000000114 .LVL15
+     /tmp/ccTlVi86.s:194    .text:0000000000000118 .LVL16
+     /tmp/ccTlVi86.s:14     .text:0000000000000000 .LVL0
+     /tmp/ccTlVi86.s:51     .text:0000000000000048 .LVL2
+     /tmp/ccTlVi86.s:55     .text:000000000000004c .LVL3
+     /tmp/ccTlVi86.s:300    .text:0000000000000194 .LVL27
+     /tmp/ccTlVi86.s:323    .text:00000000000001c0 .LVL28
+     /tmp/ccTlVi86.s:368    .text:00000000000001f8 .LVL34
+GAS LISTING /tmp/ccTlVi86.s 			page 17
+
+
+     /tmp/ccTlVi86.s:372    .text:0000000000000200 .LVL35
+     /tmp/ccTlVi86.s:376    .text:0000000000000204 .LVL36
+     /tmp/ccTlVi86.s:332    .text:00000000000001d0 .LVL30
+     /tmp/ccTlVi86.s:336    .text:00000000000001d4 .LVL31
+     /tmp/ccTlVi86.s:349    .text:00000000000001e0 .LVL33
+     /tmp/ccTlVi86.s:207    .text:000000000000011c .LVL17
+     /tmp/ccTlVi86.s:239    .text:0000000000000154 .LVL18
+     /tmp/ccTlVi86.s:250    .text:0000000000000160 .LVL19
+     /tmp/ccTlVi86.s:254    .text:0000000000000168 .LVL20
+     /tmp/ccTlVi86.s:278    .text:000000000000018c .LVL25
+     /tmp/ccTlVi86.s:287    .text:0000000000000190 .LVL26
+     /tmp/ccTlVi86.s:265    .text:0000000000000178 .LVL22
+     /tmp/ccTlVi86.s:269    .text:000000000000017c .LVL23
+     /tmp/ccTlVi86.s:68     .text:0000000000000050 .LVL4
+     /tmp/ccTlVi86.s:98     .text:0000000000000088 .LVL5
+     /tmp/ccTlVi86.s:109    .text:0000000000000094 .LVL6
+     /tmp/ccTlVi86.s:113    .text:000000000000009c .LVL7
+     /tmp/ccTlVi86.s:131    .text:00000000000000c8 .LVL10
+     /tmp/ccTlVi86.s:139    .text:00000000000000cc .LVL11
+     /tmp/ccTlVi86.s:389    .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+_ZN3PCB7runningE
+_ZN3PCB8dispatchEv
+_ZN5Queue3putEP3PCB
+_ZN9Scheduler3putEP3PCB
+_ZN5Queue3getEv
